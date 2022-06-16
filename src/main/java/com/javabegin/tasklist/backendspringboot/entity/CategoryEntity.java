@@ -17,6 +17,7 @@ public class CategoryEntity {
     private Integer completedCount;
     private Integer uncompletedCount;
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
