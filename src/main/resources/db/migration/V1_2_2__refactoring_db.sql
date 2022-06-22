@@ -1,5 +1,5 @@
 -- Категория не может быть пустой, все сделано так, что всегда будет неудаляемая категория
-alter table task add column category_id INTEGER not null default 1;
+alter table task add column category_id INTEGER not null;
 
 
 alter table task
@@ -12,8 +12,8 @@ alter table category
 
 
 -- Создание базовых полей
-insert into stat (completed_total, uncompleted_total) values (0, 0);
-insert into category(title, completed_count, uncompleted_count) VALUES ('Default', 0, 0);
+-- insert into stat (completed_total, uncompleted_total) values (0, 0);
+-- insert into category(title, completed_count, uncompleted_count) VALUES ('No category', 0, 0);
 
 
 -- Переработка старого триггера, так как предыдущий неправильно обрабатывал случаи с нулевой категорией
