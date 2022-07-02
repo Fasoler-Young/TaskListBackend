@@ -22,19 +22,23 @@ public class CategoryService {
         return repository.save(category);
     }
 
-    public void deleteById(Integer id){
-        repository.deleteById(id);
+    public void deleteByIdAndUserId(Integer id, Integer userId){
+        repository.deleteByIdAndUserId(id, userId);
     }
 
     public CategoryEntity findById(Integer id){
         return repository.findById(id).get();
     }
 
-    public List<CategoryEntity> findAllByOrderById(){
-        return repository.findAllByOrderById();
+    public List<CategoryEntity> findAllByUserIdOrderById(Integer userId){
+        return repository.findAllByUserIdOrderById(userId);
     }
 
-    public List<CategoryEntity> findByTitle(String text){
-        return repository.findByTitle(text);
+    public List<CategoryEntity> findByTitleAndUserId(String text, Integer id){
+        return repository.findByTitleAndUserId(text, id);
+    }
+
+    public CategoryEntity findByIdAndUserId(Integer id, Integer userId){
+        return repository.findByIdAndUserId(id, userId);
     }
 }

@@ -1,10 +1,10 @@
 package com.javabegin.tasklist.backendspringboot.controller;
 
 import com.javabegin.tasklist.backendspringboot.entity.CategoryEntity;
-import com.javabegin.tasklist.backendspringboot.entity.PriorityEntity;
-import com.javabegin.tasklist.backendspringboot.repo.CategoryRepository;
+import com.javabegin.tasklist.backendspringboot.exсeption.MissedOrRedundantParamException;
 import com.javabegin.tasklist.backendspringboot.search.CategorySearchValues;
 import com.javabegin.tasklist.backendspringboot.service.CategoryService;
+import com.javabegin.tasklist.backendspringboot.service.UserDetailsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,100 +12,90 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/category")
-public class CategoryController {
+public class CategoryController extends SupportMethods{
 
-    private final CategoryService service;
+    // TODO Продумать как во все контроллеры добавить определение текущего пользователя
+    private final CategoryService categoryService;
 
-    public CategoryController(CategoryService service) {
-        this.service = service;
+    @Autowired
+    public CategoryController(UserDetailsServiceImpl userDetailsService, CategoryService categoryService) {
+        super(userDetailsService);
+        this.categoryService = categoryService;
     }
+
 
     @PostMapping("/add")
     @Operation(summary = "Add new category")
-    public ResponseEntity<CategoryEntity> addCategory(@RequestBody CategoryEntity category){
-        if(category.getId() != null && category.getId() != 0){
-            return new ResponseEntity("redundant param: id must be null", HttpStatus.NOT_ACCEPTABLE);
-        }
+    public ResponseEntity<CategoryEntity> addCategory(@RequestParam String title) throws MissedOrRedundantParamException {
 
-        if( category.getCompletedCount() != null && category.getCompletedCount() != 0 ){
-            return new ResponseEntity("redundant param: completed count must be null", HttpStatus.NOT_ACCEPTABLE);
+        if(isNullOrEmpty(title)){
+            throw new MissedOrRedundantParamException("missed param: title");
         }
-
-        if( category.getUncompletedCount() != null && category.getUncompletedCount() != 0 ){
-            return new ResponseEntity("redundant param: uncompleted count must be null", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        if(category.getTitle() == null || category.getTitle().trim().length() == 0){
-            return new ResponseEntity("missed param: Title", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        return ResponseEntity.ok(service.add(category));
+        return ResponseEntity.ok(categoryService.add(new CategoryEntity(title, getCurrentUserId())));
     }
+
 
     @PutMapping("/update")
     @Operation(summary = "Update category")
-    public ResponseEntity<CategoryEntity> update(@RequestBody CategoryEntity category){
-         if( category.getId() == null || category.getId() == 0){
-             return new ResponseEntity("missing param: id must not be bull", HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<CategoryEntity> update(@RequestParam Integer id, @RequestParam String title) throws MissedOrRedundantParamException {
+         if( id == null || id == 0){
+             throw new MissedOrRedundantParamException("redundant param: id must be null");
          }
-         if(category.getTitle() == null || category.getTitle().trim().length() == 0){
-             return new ResponseEntity("missing param: title must not be bull", HttpStatus.NOT_ACCEPTABLE);
+         if(isNullOrEmpty(title)){
+             throw new MissedOrRedundantParamException("missed param: title");
          }
-
-        if( category.getCompletedCount() == null ){
-            return new ResponseEntity("redundant param: completed count must not be null", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        if( category.getUncompletedCount() == null){
-            return new ResponseEntity("redundant param: uncompleted count must not be null", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-
-
-        return ResponseEntity.ok(service.update(category));
-
+         // Здесь используется метод find вместо getById потому что нужно запретить пользователю менять чужие задачи
+         // Это можно было бы исправить еще одним запросом, но это выглядит бессмысленно
+         CategoryEntity category = categoryService.findByIdAndUserId(id, getCurrentUserId());
+         if(category == null){
+             throw new MissedOrRedundantParamException("category not found");
+         }
+         category.setTitle(title);
+         return ResponseEntity.ok(categoryService.update(category));
     }
 
-    @GetMapping("/id/{id}")
+
+    // TODO Подумать над тем, чтобы можно было получить только свои задачи или просто сделать метод админским
+    @GetMapping("/id")
     @Operation(summary = "Get Category by id")
-    public ResponseEntity<CategoryEntity> getById(@PathVariable Integer id){
-        CategoryEntity category = null;
+    public ResponseEntity<CategoryEntity> getById(@RequestParam Integer id) throws MissedOrRedundantParamException {
         try {
-            category = service.findById(id);
+            CategoryEntity category = categoryService.findById(id);
+            return ResponseEntity.ok(category);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+            throw new MissedOrRedundantParamException("id = " + id + " not found for user: " + getCurrentUserLogin());
         }
-        return ResponseEntity.ok(category);
     }
 
-    @DeleteMapping("/delete/{id}")
-    @Operation(summary = "Delete category by id")
-    public ResponseEntity delete(@PathVariable Integer id){
-        try{
-            service.deleteById(id);
 
+    @DeleteMapping("/delete")
+    @Operation(summary = "Delete category by id for current user")
+    public ResponseEntity<HttpStatus> deleteByIdForCurrentUser(@RequestParam Integer id) throws MissedOrRedundantParamException {
+        try{
+            categoryService.deleteByIdAndUserId(id, getCurrentUserId());
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity("id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+            throw new MissedOrRedundantParamException("id = " + id + " not found for user: " + getCurrentUserLogin());
         }
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
 
+
     @GetMapping("/all")
-    @Operation(summary = "Get all priorities")
-    public List<CategoryEntity> findAll(){
-        return service.findAllByOrderById();
+    @Operation(summary = "Get all priorities for current user")
+    public List<CategoryEntity> findAllForCurrentUser(){
+        return categoryService.findAllByUserIdOrderById(getCurrentUserId());
     }
 
-    @PostMapping("/serach")
-    @Operation(summary = "Search By title")
-    public ResponseEntity<List<CategoryEntity>> search(@RequestBody CategorySearchValues searchValues){
-        return ResponseEntity.ok(service.findByTitle(searchValues.getText()));
+
+    @PostMapping("/search")
+    @Operation(summary = "Search By title for current user")
+    public ResponseEntity<List<CategoryEntity>> searchForCurrentUser(@RequestBody CategorySearchValues searchValues){
+        return ResponseEntity.ok(categoryService.findByTitleAndUserId(searchValues.getText(), getCurrentUserId()));
 
     }
 

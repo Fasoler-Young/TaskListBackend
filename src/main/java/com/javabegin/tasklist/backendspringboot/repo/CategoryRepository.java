@@ -12,9 +12,14 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
 
     @Query("SELECT c FROM CategoryEntity c where" +
-            "(:title is null or :title='' or lower(c.title) like concat('%', :title, '%'))" +
+            "(:title is null or :title='' or lower(c.title) like concat('%', :title, '%')) and" +
+            "(c.userId=:userId)" +
             "order by c.title asc")
-    List<CategoryEntity> findByTitle(@Param("title") String title);
+    List<CategoryEntity> findByTitleAndUserId(@Param("title") String title, @Param("userId") Integer userId);
 
-    List<CategoryEntity> findAllByOrderById();
+    List<CategoryEntity> findAllByUserIdOrderById(Integer userId);
+
+    void deleteByIdAndUserId(Integer id, Integer userId);
+
+    CategoryEntity findByIdAndUserId(Integer id, Integer userId);
 }

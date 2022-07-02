@@ -16,7 +16,14 @@ public class CategoryEntity {
     private String title;
     private Integer completedCount;
     private Integer uncompletedCount;
+    private Integer userId;
 
+    public CategoryEntity(String title, Integer userId) {
+        this.title = title;
+        this.completedCount = 0;
+        this.uncompletedCount = 0;
+        this.userId = userId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +48,12 @@ public class CategoryEntity {
     @Column(name = "uncompleted_count")
     public Integer getUncompletedCount() {
         return uncompletedCount;
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public Integer getUserId(){
+        return userId;
     }
 
     @Override
