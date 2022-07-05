@@ -1,5 +1,6 @@
 package com.javabegin.tasklist.backendspringboot.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -11,11 +12,17 @@ import java.util.Objects;
 @NoArgsConstructor
 @Setter
 @Table(name = "category", schema = "public", catalog = "taskList")
+@Schema(description = "Category")
 public class CategoryEntity {
+    @Schema(description = "Identifier")
     private Integer id;
+    @Schema(description = "Name of category", example = "University")
     private String title;
+    @Schema(description = "The number of completed tasks for this category")
     private Integer completedCount;
+    @Schema(description = "The number of uncompleted tasks for this category")
     private Integer uncompletedCount;
+    @Schema(description = "Identifier of the user to whom the category belongs")
     private Integer userId;
 
     public CategoryEntity(String title, Integer userId) {
