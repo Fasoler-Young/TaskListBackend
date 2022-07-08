@@ -66,7 +66,7 @@ public class CategoryController extends SupportMethods{
     public ResponseEntity<CategoryEntity> update(@RequestParam @Parameter(description = "Identifier of category", example = "1") Integer id,
                                                  @RequestParam @Parameter(description = "New title of category", example = "New title") String title) throws MissedOrRedundantParamException {
          if( id == null || id == 0){
-             throw new MissedOrRedundantParamException("redundant param: id must be null");
+             throw new MissedOrRedundantParamException("missed param: id");
          }
          if(isNullOrEmpty(title)){
              throw new MissedOrRedundantParamException("missed param: title");
@@ -82,7 +82,6 @@ public class CategoryController extends SupportMethods{
     }
 
 
-    // TODO Подумать над тем, чтобы можно было получить только свои задачи или просто сделать метод админским
     @GetMapping("/id")
     @Operation(summary = "Get category by id",
             responses = {
@@ -93,9 +92,9 @@ public class CategoryController extends SupportMethods{
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = Response.class)))
             })
-    public ResponseEntity<CategoryEntity> getById(@RequestParam @Parameter(description = "Identifier of category", example = "1") Integer id) throws MissedOrRedundantParamException {
+    public ResponseEntity<CategoryEntity> getByIdAndUserId(@RequestParam @Parameter(description = "Identifier of category", example = "1") Integer id) throws MissedOrRedundantParamException {
         try {
-            CategoryEntity category = categoryService.findById(id);
+            CategoryEntity category = categoryService.findByIdAndUserId(id, getCurrentUserId());
             return ResponseEntity.ok(category);
         }catch (Exception e){
             e.printStackTrace();
@@ -144,8 +143,8 @@ public class CategoryController extends SupportMethods{
                             content = @Content(mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = CategoryEntity.class)))),
             })
-    public ResponseEntity<List<CategoryEntity>> searchForCurrentUser(@RequestParam @Parameter(description = "search in titles") CategorySearchValues searchValues){
-        return ResponseEntity.ok(categoryService.findByTitleAndUserId(searchValues.getText(), getCurrentUserId()));
+    public ResponseEntity<List<CategoryEntity>> searchForCurrentUser(@RequestBody @Parameter(description = "search in titles") CategorySearchValues searchValues){
+        return ResponseEntity.ok(categoryService.findByTitleAndUserId(searchValues.getTitle(), getCurrentUserId()));
 
     }
 

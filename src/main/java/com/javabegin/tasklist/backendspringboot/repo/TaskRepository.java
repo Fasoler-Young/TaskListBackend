@@ -23,4 +23,8 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
                                     Pageable pageable
     );
 
+    TaskEntity findByIdAndUserId(Integer id, Integer userId);
+
+    void deleteByIdAndUserId(Integer id, Integer userId);
+
 }

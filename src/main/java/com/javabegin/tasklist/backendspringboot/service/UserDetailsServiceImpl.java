@@ -2,12 +2,14 @@ package com.javabegin.tasklist.backendspringboot.service;
 
 import com.javabegin.tasklist.backendspringboot.entity.UserEntity;
 import com.javabegin.tasklist.backendspringboot.repo.UserRepository;
+import org.postgresql.util.PSQLException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +68,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRepository.changePassword(login, encoder.encode(password));
     }
 
-    public void changeRole(String login, String role){
+    public void changeRole(String login, String role) throws PersistenceException {
         userRepository.changeRole(login, role);
     }
 

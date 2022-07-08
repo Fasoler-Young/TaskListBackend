@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Schema(name = "Search values for categories")
 public class CategorySearchValues {
-    @Schema(name = "the text you are looking for", example = "cat")
-    private String text;
+    @Schema(description = "the text you are looking for", example = "cat")
+    private String title;
 }

@@ -1,5 +1,7 @@
 package com.javabegin.tasklist.backendspringboot.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -11,12 +13,28 @@ import java.util.Objects;
 @NoArgsConstructor
 @Setter
 @Table(name = "task", schema = "public", catalog = "taskList")
+@Schema(description = "Task")
 public class TaskEntity {
+    @Schema(description = "Identify of task", example = "1")
     private Integer id;
+    @Schema(description = "Summary of task", example = "Go for a walk")
     private String title;
+    @Schema(description = "Task id done?", example = "false")
     private Boolean completed;
+    @Schema(description = "Priority of task")
     private PriorityEntity priority;
+    @Schema(description = "Category of task")
     private CategoryEntity category;
+    @Schema(description = "Identifier of the user to whom the task belongs", example = "1")
+    private Integer userId;
+
+    public TaskEntity(String title, Boolean completed, CategoryEntity category, PriorityEntity priority, Integer userId) {
+        this.title = title;
+        this.completed = completed;
+        this.category = category;
+        this.priority = priority;
+        this.userId =userId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +53,12 @@ public class TaskEntity {
     @Column(name = "completed", nullable = false)
     public Boolean getCompleted() {
         return completed;
+    }
+
+    @Basic
+    @Column(name = "user_id", nullable = false)
+    public Integer getUserId(){
+        return userId;
     }
 
     @ManyToOne

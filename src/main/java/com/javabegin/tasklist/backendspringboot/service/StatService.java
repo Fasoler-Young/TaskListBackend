@@ -4,6 +4,8 @@ import com.javabegin.tasklist.backendspringboot.entity.StatEntity;
 import com.javabegin.tasklist.backendspringboot.repo.StatRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StatService {
 
@@ -13,7 +15,11 @@ public class StatService {
         this.repository = repository;
     }
 
-    public StatEntity findById(Integer id){
-        return repository.findById(id).get();
+    public StatEntity findByUserId(Integer userId){
+        return repository.findByUserId(userId);
+    }
+
+    public List<StatEntity> findAll(){
+        return repository.findAll();
     }
 }

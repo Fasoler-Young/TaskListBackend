@@ -14,7 +14,7 @@ import java.util.Objects;
 @Table(name = "category", schema = "public", catalog = "taskList")
 @Schema(description = "Category")
 public class CategoryEntity {
-    @Schema(description = "Identifier")
+    @Schema(description = "Identifier of category")
     private Integer id;
     @Schema(description = "Name of category", example = "University")
     private String title;

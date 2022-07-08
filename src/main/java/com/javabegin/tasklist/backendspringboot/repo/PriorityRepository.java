@@ -12,11 +12,15 @@ import java.util.List;
 public interface PriorityRepository extends JpaRepository<PriorityEntity, Integer> {
 
     @Query("SELECT p FROM PriorityEntity p where " +
-            "(:title is null or :title='' or lower(p.title) like lower(concat('%', :title, '%') ) )" +
+            "(:title is null or :title='' or lower(p.title) like lower(concat('%', :title, '%') ) ) and" +
+            "(p.userId=:userId)" +
             "order by p.title asc")
-    List<PriorityEntity> findByTitle(@Param("title") String title);
+    List<PriorityEntity> findByTitle(@Param("title") String title, @Param("userId") Integer userId);
 
-    // Сортировка по названию
-    List<PriorityEntity> findAllByOrderByTitleAsc();
+    List<PriorityEntity> findAllByUserId(Integer userId);
+
+    void deleteByIdAndUserId(Integer id, Integer userId);
+
+    PriorityEntity findByIdAndUserId(Integer id, Integer userId);
 
 }

@@ -28,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/registration/updateRole").hasRole("ADMIN")
                     .antMatchers("/registration/deleteByLogin").hasRole("ADMIN")
                     .antMatchers("/registration/all").hasRole("ADMIN")
+                .antMatchers("/stat/all").hasRole("ADMIN")
 
                 .antMatchers("/swagger-ui-custom.html").permitAll()
                 .antMatchers("/task/**", "/category/**", "/priority/**",

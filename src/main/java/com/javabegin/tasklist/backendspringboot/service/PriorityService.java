@@ -32,11 +32,19 @@ public class PriorityService {
         return repository.findById(id).get();
     }
 
-    public List<PriorityEntity> findAllByOrderByTitleAsc(){
-        return repository.findAllByOrderByTitleAsc();
+    public List<PriorityEntity> findAllByUserId(Integer userId){
+        return repository.findAllByUserId(userId);
     }
 
-    public List<PriorityEntity> findByTitle(String text){
-        return repository.findByTitle(text);
+    public List<PriorityEntity> findByTitle(String text, Integer userId){
+        return repository.findByTitle(text, userId);
+    }
+
+    public void deleteByIdAndUserId(Integer id, Integer userId){
+        repository.deleteByIdAndUserId(id, userId);
+    }
+
+    public PriorityEntity findByIdAndUserId(Integer id, Integer userId){
+        return repository.findByIdAndUserId(id, userId);
     }
 }

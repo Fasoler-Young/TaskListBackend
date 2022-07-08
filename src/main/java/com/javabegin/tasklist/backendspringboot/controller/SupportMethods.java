@@ -1,9 +1,10 @@
 package com.javabegin.tasklist.backendspringboot.controller;
 
 import com.javabegin.tasklist.backendspringboot.service.UserDetailsServiceImpl;
+import lombok.Getter;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-
+@Getter
 public abstract class SupportMethods {
 
     private final UserDetailsServiceImpl userDetailsService;

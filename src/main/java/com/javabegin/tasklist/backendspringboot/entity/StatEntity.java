@@ -1,5 +1,6 @@
 package com.javabegin.tasklist.backendspringboot.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -11,10 +12,16 @@ import java.util.Objects;
 @NoArgsConstructor
 @Setter
 @Table(name = "stat", schema = "public", catalog = "taskList")
+@Schema(description = "Stat")
 public class StatEntity {
+    @Schema(description = "Identify of stat", example = "1")
     private Integer id;
+    @Schema(description = "Count of completed tasks", example = "1")
     private Integer completedTotal;
+    @Schema(description = "Count of uncompleted tasks", example = "1")
     private Integer uncompletedTotal;
+    @Schema(description = "Identifier of the user to whom the statistic belongs", example = "1")
+    private Integer userId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +40,12 @@ public class StatEntity {
     @Column(name = "uncompleted_total")
     public Integer getUncompletedTotal() {
         return uncompletedTotal;
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public Integer getUserId(){
+        return  userId;
     }
 
     @Override

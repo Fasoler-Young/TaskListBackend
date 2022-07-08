@@ -40,6 +40,14 @@ public class TaskService {
         return repository.findAll();
     }
 
+    public TaskEntity findByIdAndUserId(Integer id, Integer userId){
+        return repository.findByIdAndUserId(id, userId);
+    }
+
+    public void deleteByIdAndUserId(Integer id, Integer userId){
+        repository.deleteByIdAndUserId(id, userId);
+    }
+
     public Page<TaskEntity> findAllByParam(String title, Boolean completed, Integer priorityId, Integer categoryId, Pageable pageable){
         return repository.findAllByParam(title, completed, priorityId, categoryId, pageable);
     }
